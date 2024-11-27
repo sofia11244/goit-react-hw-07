@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-
+import { useEffect } from "react";
 import ContactListItem from './ContactListItem.jsx';
 import styles from './component.module.css';
 import { useSelector, useDispatch } from "react-redux";
-
+import { fetchContacts } from "../redux/contactsOps.js";
 import { deleteContact } from "../redux/contactsOps.js"; // contactsSlice'tan eylemi al
 
 const ContactList = () => {
@@ -14,7 +14,11 @@ const ContactList = () => {
     const filteredContacts =contacts.filter(contact => 
         contact.name.toLowerCase().includes(nameFilter.toLowerCase())
     );
-
+    useEffect(() => {
+        dispatch(fetchContacts());
+      }, [dispatch]);
+      
+    
     // Silme fonksiyonu belki delete işe yaramz
     const handleDelete = (id) => {
         dispatch(deleteContact(id)); 
