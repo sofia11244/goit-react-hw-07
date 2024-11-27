@@ -1,27 +1,41 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchContacts, addContact, deleteContact } from './contactsOps.js';
 
 const contactsSlice = createSlice({
   name: "contacts",
   initialState: {
-    items: [
-      { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
-      { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
-      { id: "id-3", name: "Eden Clements", number: "645-17-79" },
-      { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
-    ],
-    searchValue: "", // Arama değeri
+    items: [],
+    searchValue: "", 
+    error: null, // Hata durumu
   },
   reducers: {
-    addContact(state, action) { 
-      state.items.push(action.payload);
+    updateSearchValue(state, action) {
+      state.searchValue = action.payload;
     },
-    deleteContact(state, action) {
-      state.items = state.items.filter(
-        (contact) => contact.id !== action.payload
-      );
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchContacts.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchContacts.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = action.payload; // API'den gelen veriyi state'e ekliyoruz
+      })
+      .addCase(fetchContacts.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.items.push(action.payload); // Yeni eklenen kişiyi state'e ekliyoruz
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.items = state.items.filter(
+          (contact) => contact.id !== action.payload.id // Silinen kişiyi state'den çıkarıyoruz
+        );
+      });
   },
 });
 
-export const { addContact, deleteContact, updateSearchValue } = contactsSlice.actions;
+export const { updateSearchValue } = contactsSlice.actions;
 export default contactsSlice.reducer;
