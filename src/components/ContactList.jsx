@@ -19,7 +19,7 @@ const ContactList = () => {
       }, [dispatch]);
       
     
-    // Silme fonksiyonu belki delete işe yaramz
+
     const handleDelete = (id) => {
         dispatch(deleteContact(id)); 
     };
